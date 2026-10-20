@@ -48,12 +48,12 @@ People can be added to a rescue before they have ever logged in, by ISA ID or em
 
 ## Deploy
 
-Pushes to `main` run the tests, then build the app (vendor + assets) in CI and rsync it over SSH to the repository variable `DEPLOY_PATH` (relative to the SSH home). It uses the hosting account from the repository variables `FTP_HOST`, `FTP_USER` and the secret `FTP_PASSWORD`. The host needs PHP ≥ 8.3 with intl, MySQL, and its document root pointed at `DEPLOY_PATH/public`. `.env` is created once on the server.
+`main` is protected (squash-merged pull requests only, CI must pass). Every merge to `main` runs the tests, then build the app (vendor + assets) in CI and rsync it over SSH to the repository variable `DEPLOY_PATH` (relative to the SSH home). It uses the hosting account from the repository variables `FTP_HOST`, `FTP_USER` and the secret `FTP_PASSWORD`. The host needs PHP ≥ 8.3 with intl, MySQL, and its document root pointed at `DEPLOY_PATH/public`. `.env` is created once on the server.
 
 First deploy, on the server (`DEPLOY_PATH`, over SSH with the same account):
 
 1. Create `.env` from `.env.example` with at least `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://slackrescue.online`, `SESSION_SECURE_COOKIE=true`, a fresh `APP_KEY` (`php artisan key:generate --show` locally), the MySQL credentials and the Cognito client. Never run `migrate --seed` here: the seeder is demo data.
-2. Push to `main`; CI uploads, migrates and caches.
+2. Merge a pull request into `main`; CI uploads, migrates and caches.
 3. Log in once with your ISA account, then make yourself admin: `php artisan admin:grant you@example.org` (email or ISA ID). Further admins can be set in `/admin`.
 
 `public/.user.ini` raises PHP's upload limit to 10 MB for rescue photos; if the host ignores it, set `upload_max_filesize` and `post_max_size` in its PHP settings.

@@ -11,7 +11,7 @@ Read `README.md` and `docs/STACK.md` first. Key decisions:
 
 ## Workflow for AI agents
 
-- **`main` deploys to production on every push.** Never commit or push to `main`. Pull `main`, create a branch, push the branch, and ask the human before merging. Other people push too, so pull first.
+- **`main` deploys to production on every push.** It is protected: no direct pushes, changes land only through a pull request that is squash-merged after CI passes. Pull `main`, create a branch, push it, open a PR, and ask the human before merging. Other people push too, so pull first.
 - Before calling something done, run all of these:
   - `vendor/bin/sail test` (MySQL)
   - `vendor/bin/sail exec -T -e DB_CONNECTION=sqlite -e DB_DATABASE=:memory: laravel.test php artisan test` (as CI)

@@ -1,6 +1,6 @@
 # How to contribute
 
-**`main` is live.** Every push to `main` deploys to slackrescue.online. Never push to it directly.
+**`main` is live.** Every push to `main` deploys to slackrescue.online. The branch is protected: you can't push to it directly, only merge a pull request.
 
 ## Workflow
 
@@ -13,7 +13,7 @@
    ```
    Also click through the change on http://localhost:8000.
 4. Push the branch and open a pull request. CI runs the tests.
-5. Merge once CI is green and someone has looked at it.
+5. Once CI is green and someone has looked at it, merge with **Squash and merge** (the only option allowed). GitHub blocks the merge while CI fails.
 
 ## Editing text and images
 
