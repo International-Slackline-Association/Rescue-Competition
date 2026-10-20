@@ -1,0 +1,53 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/*
+ * Colours and style taken from the "Highline system overview" diagram
+ * (public/images/rescue_graphics): line art on white, indigo labels and
+ * leader lines, dashed rounded detail frames, colour-chip legends.
+ */
+@theme {
+    --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-ink: #231f20; /* diagram text */
+    --color-label: #5459b1; /* labels, leader lines, dashed frames */
+    --color-muted: #6066a8;
+    --color-line: #cdcee8; /* pale indigo hairlines */
+    --color-paper: #ffffff;
+    --color-main: #48a5b9; /* primary system (main line) */
+    --color-main-dark: #3b7785;
+    --color-backup: #85b3e3; /* secondary system (backup) */
+    --color-support: #fab47a; /* structural support (tapes, pads) */
+    --color-anchor: #b5b6b5; /* attachment structures */
+    --color-ppe: #a8a2d6; /* personal protective equipment */
+    --color-edge: #d04f48; /* edge protection warnings */
+}
+
+@layer components {
+    .btn {
+        @apply inline-flex items-center gap-2 rounded-lg bg-main-dark px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main;
+    }
+    .btn-ghost {
+        @apply inline-flex items-center gap-2 rounded-lg border border-label/40 px-4 py-2 text-sm font-medium text-label transition hover:border-label hover:bg-label/5;
+    }
+    .field {
+        @apply block w-full rounded-lg border border-line bg-white px-3 py-2 text-ink placeholder:text-muted/70 focus:border-main focus:ring-2 focus:ring-main/20 focus:outline-none;
+    }
+    .label {
+        @apply mb-1 block text-sm font-medium text-label;
+    }
+    .card {
+        @apply overflow-hidden rounded-xl border border-line bg-white;
+    }
+    /* Dashed rounded frame, like the diagram's "See detailed figure" callouts. */
+    .frame {
+        @apply rounded-2xl border-2 border-dashed border-label/50 bg-white;
+    }
+    .heading {
+        @apply font-semibold tracking-tight text-label;
+    }
+}

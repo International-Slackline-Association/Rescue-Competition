@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Least privilege for the workflow token: the jobs only read the repository.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: intl, gd, pdo_sqlite, zip
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: composer install --no-interaction --no-progress
+      - run: npm ci && npm run build
+      - run: cp .env.example .env && php artisan key:generate
+      - run: vendor/bin/pint --test
+      - run: php artisan test
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+
+  # Deploys a pre-built app to plain PHP webhosting over SSH: no Composer or Node needed on the server.
+  # Repository variables FTP_HOST, FTP_USER, DEPLOY_PATH and secret FTP_PASSWORD (the FTP account has SSH access).
+  # DEPLOY_PATH is relative to the SSH home; .env and uploaded images live on the server only.
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && vars.FTP_HOST != '' && vars.DEPLOY_PATH != ''
+    runs-on: ubuntu-latest
+    concurrency: production
+    env:
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      SSHPASS: ${{ secrets.FTP_PASSWORD }}
+      SSH_TARGET: ${{ vars.FTP_USER }}@${{ vars.FTP_HOST }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: intl
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+      - run: npm ci && npm run build && rm -rf node_modules
+      - run: sudo apt-get install -y -qq sshpass
+      - name: Upload
+        run: |
+          export RSYNC_RSH="sshpass -e ssh -o StrictHostKeyChecking=accept-new"
+          # Allowlist: only runtime files are uploaded; everything else on the server is removed
+          # except the protected (P) server-only files.
+          rsync -az --delete --delete-excluded \
+            --filter='P /.env' --filter='P /storage/***' --filter='P /public/storage' \
+            --filter='- /database/factories/' --filter='- /database/seeders/' \
+            --filter='- /resources/css/' --filter='- /resources/js/' \
+            --filter='+ /app/' --filter='+ /bootstrap/' --filter='+ /config/' --filter='+ /database/' \
+            --filter='+ /public/' --filter='+ /resources/' --filter='+ /routes/' --filter='+ /vendor/' \
+            --filter='+ /artisan' --filter='+ /composer.json' --filter='- /*' \
+            ./ "$SSH_TARGET:$DEPLOY_PATH/"
+          rsync -az --ignore-existing storage/ "$SSH_TARGET:$DEPLOY_PATH/storage/"
+      - name: Migrate and cache
+        run: |
+          sshpass -e ssh -o StrictHostKeyChecking=accept-new "$SSH_TARGET" \
+            "cd $DEPLOY_PATH && php artisan migrate --force && php artisan storage:link --force && php artisan optimize"
