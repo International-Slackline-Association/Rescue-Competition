@@ -5,7 +5,7 @@
             No ISA login is configured (<code>COGNITO_CLIENT_ID</code> is empty), so pick a seeded account.
         </p>
 
-        <ul class="mt-8 divide-y divide-line rounded-lg border border-line bg-white">
+        <ul class="mt-8 divide-y divide-line rounded-lg border border-line bg-surface">
             @forelse ($users as $user)
                 <li>
                     <form method="post" action="{{ route('dev.login', $user) }}">

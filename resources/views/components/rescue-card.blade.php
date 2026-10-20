@@ -6,7 +6,7 @@
         <p class="mt-1 font-semibold">{{ $rescue->location }}</p>
         <div class="mt-3 flex -space-x-2">
             @foreach ($rescue->participants->unique('id') as $person)
-                <x-avatar :user="$person" class="ring-2 ring-white" />
+                <x-avatar :user="$person" class="ring-2 ring-surface" />
             @endforeach
         </div>
     </div>
