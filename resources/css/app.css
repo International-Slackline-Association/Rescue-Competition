@@ -4,6 +4,9 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/* Dark mode: <html class="dark">, set before first paint in the layout (system preference or the visitor's choice). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
  * Colours and style taken from the "Highline system overview" diagram
  * (public/images/rescue_graphics): line art on white, indigo labels and
@@ -17,7 +20,8 @@
     --color-label: #5459b1; /* labels, leader lines, dashed frames */
     --color-muted: #6066a8;
     --color-line: #cdcee8; /* pale indigo hairlines */
-    --color-paper: #ffffff;
+    --color-paper: #ffffff; /* page background */
+    --color-surface: #ffffff; /* cards, header, form fields */
     --color-main: #48a5b9; /* primary system (main line) */
     --color-main-dark: #3b7785;
     --color-backup: #85b3e3; /* secondary system (backup) */
@@ -27,25 +31,58 @@
     --color-edge: #d04f48; /* edge protection warnings */
 }
 
+/* Night version of the same diagram palette: indigo-black paper, lighter labels and lines. */
+:root.dark {
+    color-scheme: dark;
+
+    --color-ink: #e7e7f1;
+    --color-label: #b1b4f2;
+    --color-muted: #9da2d2;
+    --color-line: #353859;
+    --color-paper: #12131c;
+    --color-surface: #1b1d2b;
+    --color-main: #5cbcd0;
+    --color-main-dark: #72c7d9; /* also the button background, so buttons use paper-coloured text */
+    --color-edge: #f07a73;
+}
+
+/* Markdown pages follow the theme tokens instead of the typography plugin's greys. */
+.prose {
+    --tw-prose-body: var(--color-ink);
+    --tw-prose-headings: var(--color-label);
+    --tw-prose-lead: var(--color-ink);
+    --tw-prose-links: var(--color-label);
+    --tw-prose-bold: var(--color-ink);
+    --tw-prose-counters: var(--color-muted);
+    --tw-prose-bullets: var(--color-muted);
+    --tw-prose-hr: var(--color-line);
+    --tw-prose-quotes: var(--color-ink);
+    --tw-prose-quote-borders: var(--color-line);
+    --tw-prose-captions: var(--color-muted);
+    --tw-prose-code: var(--color-ink);
+    --tw-prose-th-borders: var(--color-line);
+    --tw-prose-td-borders: var(--color-line);
+}
+
 @layer components {
     .btn {
-        @apply inline-flex items-center gap-2 rounded-lg bg-main-dark px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main;
+        @apply inline-flex items-center gap-2 rounded-lg bg-main-dark px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main;
     }
     .btn-ghost {
         @apply inline-flex items-center gap-2 rounded-lg border border-label/40 px-4 py-2 text-sm font-medium text-label transition hover:border-label hover:bg-label/5;
     }
     .field {
-        @apply block w-full rounded-lg border border-line bg-white px-3 py-2 text-ink placeholder:text-muted/70 focus:border-main focus:ring-2 focus:ring-main/20 focus:outline-none;
+        @apply block w-full rounded-lg border border-line bg-surface px-3 py-2 text-ink placeholder:text-muted/70 focus:border-main focus:ring-2 focus:ring-main/20 focus:outline-none;
     }
     .label {
         @apply mb-1 block text-sm font-medium text-label;
     }
     .card {
-        @apply overflow-hidden rounded-xl border border-line bg-white;
+        @apply overflow-hidden rounded-xl border border-line bg-surface;
     }
     /* Dashed rounded frame, like the diagram's "See detailed figure" callouts. */
     .frame {
-        @apply rounded-2xl border-2 border-dashed border-label/50 bg-white;
+        @apply rounded-2xl border-2 border-dashed border-label/50 bg-surface;
     }
     .heading {
         @apply font-semibold tracking-tight text-label;

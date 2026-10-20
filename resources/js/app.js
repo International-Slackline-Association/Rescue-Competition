@@ -40,3 +40,30 @@ document.addEventListener('change', (e) => {
     input.setCustomValidity(tooLarge ? input.dataset.tooLarge : '');
     input.reportValidity();
 });
+
+// Dark mode toggle: a click saves the visitor's choice; without one, the site follows the system setting.
+const systemDark = matchMedia('(prefers-color-scheme: dark)');
+const savedTheme = () => {
+    try {
+        return localStorage.getItem('theme');
+    } catch {
+        return null;
+    }
+};
+const applyTheme = (dark) => {
+    document.documentElement.classList.toggle('dark', dark);
+    document.querySelectorAll('[data-theme-toggle]').forEach((button) => button.setAttribute('aria-pressed', String(dark)));
+};
+
+applyTheme(document.documentElement.classList.contains('dark'));
+systemDark.addEventListener('change', (e) => savedTheme() || applyTheme(e.matches));
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('[data-theme-toggle]')) return;
+
+    const dark = !document.documentElement.classList.contains('dark');
+    applyTheme(dark);
+    try {
+        localStorage.setItem('theme', dark ? 'dark' : 'light');
+    } catch {}
+});
