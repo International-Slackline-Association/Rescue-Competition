@@ -58,6 +58,14 @@
         </nav>
     </header>
 
+    {{-- Remove this banner when the competition officially starts. --}}
+    <div class="border-b border-support/50 bg-support/15">
+        <p class="mx-auto max-w-6xl px-4 py-2.5 text-sm text-ink">
+            <span class="mr-1.5 rounded bg-support px-1.5 py-0.5 text-xs font-bold tracking-wide text-[#231f20] uppercase">Beta</span>
+            The competition isn't live yet. We're testing the site, so rescues and rankings may be reset before the official start.
+        </p>
+    </div>
+
     @if (session('status'))
         <div class="mx-auto mt-6 max-w-6xl px-4">
             <p class="rounded-lg bg-label/10 px-4 py-3 text-sm text-label">{{ session('status') }}</p>
